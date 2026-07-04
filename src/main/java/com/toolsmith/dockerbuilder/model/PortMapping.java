@@ -11,6 +11,8 @@ public class PortMapping {
     private String protocol;
     /** Optional host interface to bind to, e.g. 127.0.0.1 */
     private String hostIp;
+    
+    private String port;
 
     public PortMapping() {
     }
