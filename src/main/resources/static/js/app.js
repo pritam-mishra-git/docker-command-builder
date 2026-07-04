@@ -99,7 +99,7 @@
   let debounceTimer = null;
   function scheduleGenerate() {
     clearTimeout(debounceTimer);
-    debounceTimer = setTimeout(generate, 250);
+    debounceTimer = setTimeout(generate, 120);
   }
 
   async function generate() {
