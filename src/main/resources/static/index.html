@@ -1,0 +1,250 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Docker Command Builder</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;600;700&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="css/style.css" />
+</head>
+<body>
+
+<div class="wrap">
+
+  <header class="topbar">
+    <div class="brand">
+      <span class="brand-mark">&gt;_</span>
+      <div>
+        <h1>Docker Command Builder</h1>
+        <p>Fill in the options, watch the command take shape, copy it into your terminal.</p>
+      </div>
+    </div>
+    <div class="topbar-actions">
+      <label class="field-label" for="baseCommand">docker</label>
+      <select id="baseCommand" class="select select-inline">
+        <option value="run" selected>run</option>
+        <option value="create">create</option>
+        <option value="exec">exec</option>
+        <option value="build">build</option>
+        <option value="start">start</option>
+        <option value="stop">stop</option>
+        <option value="restart">restart</option>
+        <option value="rm">rm</option>
+        <option value="rmi">rmi</option>
+        <option value="logs">logs</option>
+        <option value="ps">ps</option>
+        <option value="pull">pull</option>
+        <option value="push">push</option>
+      </select>
+    </div>
+  </header>
+
+  <main class="layout">
+
+    <!-- ============ FORM COLUMN ============ -->
+    <section class="form-col">
+
+      <div class="panel" data-scope="run create exec build start stop restart rm rmi logs pull push">
+        <h2 class="panel-title">01 &middot; Image &amp; container</h2>
+        <div class="grid-2">
+          <div class="field">
+            <label for="image" id="imageLabel">Image name</label>
+            <input id="image" type="text" placeholder="e.g. nginx:latest" autocomplete="off" />
+            <p class="hint" id="imageHint">Repository and tag, e.g. <code>postgres:16</code></p>
+          </div>
+          <div class="field">
+            <label for="containerName">Container name</label>
+            <input id="containerName" type="text" placeholder="e.g. my-nginx" autocomplete="off" />
+          </div>
+        </div>
+      </div>
+
+      <div class="panel" data-scope="run create">
+        <h2 class="panel-title">02 &middot; Port mapping</h2>
+        <p class="panel-desc">Map a host port to a container port. Leave host port blank to let Docker assign one.</p>
+        <div id="portRows" class="rows"></div>
+        <button type="button" class="btn-add" data-add="port">+ Add port mapping</button>
+      </div>
+
+      <div class="panel" data-scope="run create">
+        <h2 class="panel-title">03 &middot; Volumes</h2>
+        <p class="panel-desc">Bind-mount a host path (or named volume) into the container.</p>
+        <div id="volumeRows" class="rows"></div>
+        <button type="button" class="btn-add" data-add="volume">+ Add volume mapping</button>
+      </div>
+
+      <div class="panel" data-scope="run create exec build">
+        <h2 class="panel-title">04 &middot; Environment variables</h2>
+        <div id="envRows" class="rows"></div>
+        <button type="button" class="btn-add" data-add="env">+ Add environment variable</button>
+      </div>
+
+      <div class="panel" data-scope="run create build">
+        <h2 class="panel-title">05 &middot; Labels</h2>
+        <div id="labelRows" class="rows"></div>
+        <button type="button" class="btn-add" data-add="label">+ Add label</button>
+      </div>
+
+      <div class="panel" data-scope="run create exec">
+        <h2 class="panel-title">06 &middot; Runtime flags</h2>
+        <div class="checks">
+          <label class="check"><input type="checkbox" id="detached" /> <span>Detached <code>-d</code></span></label>
+          <label class="check"><input type="checkbox" id="interactiveTty" /> <span>Interactive TTY <code>-it</code></span></label>
+          <label class="check" data-scope="run create"><input type="checkbox" id="autoRemove" /> <span>Auto-remove on exit <code>--rm</code></span></label>
+          <label class="check" data-scope="run create"><input type="checkbox" id="publishAllPorts" /> <span>Publish all exposed ports <code>-P</code></span></label>
+        </div>
+      </div>
+
+      <div class="panel" data-scope="run create">
+        <h2 class="panel-title">07 &middot; Networking &amp; restart</h2>
+        <div class="grid-2">
+          <div class="field">
+            <label for="networkName">Network</label>
+            <input id="networkName" type="text" placeholder="e.g. my-network" autocomplete="off" />
+          </div>
+          <div class="field">
+            <label for="restartPolicy">Restart policy</label>
+            <select id="restartPolicy" class="select">
+              <option value="">default (no)</option>
+              <option value="on-failure">on-failure</option>
+              <option value="always">always</option>
+              <option value="unless-stopped">unless-stopped</option>
+            </select>
+          </div>
+        </div>
+      </div>
+
+      <div class="panel" data-scope="run create exec">
+        <h2 class="panel-title">08 &middot; Process settings</h2>
+        <div class="grid-2">
+          <div class="field">
+            <label for="workDir">Working directory <code>-w</code></label>
+            <input id="workDir" type="text" placeholder="/app" autocomplete="off" />
+          </div>
+          <div class="field">
+            <label for="user">User <code>-u</code></label>
+            <input id="user" type="text" placeholder="1000:1000" autocomplete="off" />
+          </div>
+          <div class="field" data-scope="run create">
+            <label for="hostname">Hostname <code>-h</code></label>
+            <input id="hostname" type="text" placeholder="my-host" autocomplete="off" />
+          </div>
+          <div class="field" data-scope="run create">
+            <label for="entrypoint">Entrypoint override</label>
+            <input id="entrypoint" type="text" placeholder="/bin/sh" autocomplete="off" />
+          </div>
+        </div>
+      </div>
+
+      <div class="panel" data-scope="run create">
+        <h2 class="panel-title">09 &middot; Resource limits</h2>
+        <div class="grid-2">
+          <div class="field">
+            <label for="cpus">CPU limit <code>--cpus</code></label>
+            <input id="cpus" type="text" placeholder="1.5" autocomplete="off" />
+          </div>
+          <div class="field">
+            <label for="memory">Memory limit <code>-m</code></label>
+            <input id="memory" type="text" placeholder="512m" autocomplete="off" />
+          </div>
+        </div>
+      </div>
+
+      <div class="panel">
+        <h2 class="panel-title">10 &middot; Command &amp; extra flags</h2>
+        <div class="field">
+          <label for="command">Command / args to run in container</label>
+          <input id="command" type="text" placeholder="e.g. npm start" autocomplete="off" />
+        </div>
+        <div class="field">
+          <label for="extraFlags">Extra flags <span class="muted">(anything not covered above, appended as-is)</span></label>
+          <input id="extraFlags" type="text" placeholder="e.g. --privileged --cap-add=SYS_PTRACE" autocomplete="off" />
+        </div>
+      </div>
+
+      <button type="button" id="generateBtn" class="btn-generate">Generate command</button>
+
+    </section>
+
+    <!-- ============ TERMINAL / OUTPUT COLUMN ============ -->
+    <aside class="output-col">
+      <div class="terminal">
+        <div class="terminal-titlebar">
+          <span class="dot dot-red"></span>
+          <span class="dot dot-yellow"></span>
+          <span class="dot dot-green"></span>
+          <span class="terminal-title">sh &mdash; docker</span>
+        </div>
+        <div class="terminal-body">
+          <div class="terminal-line">
+            <span class="prompt">$</span>
+            <span id="commandOut" class="command-text">docker run</span><span class="cursor">&#9608;</span>
+          </div>
+          <div id="errorLine" class="terminal-error"></div>
+        </div>
+        <div class="terminal-footer">
+          <button type="button" id="copyBtn" class="btn-copy">Copy command</button>
+          <span id="copyStatus" class="copy-status"></span>
+        </div>
+      </div>
+
+      <div class="tip-card">
+        <h3>Tip</h3>
+        <p id="scopeTip">Options that don't apply to <code>docker run</code> / <code>create</code> are hidden automatically as you switch the base command above.</p>
+      </div>
+    </aside>
+
+  </main>
+
+</div>
+
+<template id="portRowTemplate">
+  <div class="row" data-row="port">
+    <input type="text" class="row-input" data-field="hostIp" placeholder="host IP (optional)" style="flex:1.2" />
+    <input type="text" class="row-input" data-field="hostPort" placeholder="host port" style="flex:1" />
+    <span class="row-sep">:</span>
+    <input type="text" class="row-input" data-field="containerPort" placeholder="container port" style="flex:1" />
+    <select class="row-select" data-field="protocol">
+      <option value="tcp">tcp</option>
+      <option value="udp">udp</option>
+    </select>
+    <button type="button" class="btn-remove" title="Remove">&times;</button>
+  </div>
+</template>
+
+<template id="volumeRowTemplate">
+  <div class="row" data-row="volume">
+    <input type="text" class="row-input" data-field="hostPath" placeholder="host path or volume name" style="flex:2" />
+    <span class="row-sep">:</span>
+    <input type="text" class="row-input" data-field="containerPath" placeholder="container path" style="flex:2" />
+    <select class="row-select" data-field="mode">
+      <option value="">rw (default)</option>
+      <option value="ro">ro</option>
+      <option value="rw">rw</option>
+    </select>
+    <button type="button" class="btn-remove" title="Remove">&times;</button>
+  </div>
+</template>
+
+<template id="envRowTemplate">
+  <div class="row" data-row="env">
+    <input type="text" class="row-input" data-field="key" placeholder="KEY" style="flex:1" />
+    <span class="row-sep">=</span>
+    <input type="text" class="row-input" data-field="value" placeholder="value" style="flex:1.5" />
+    <button type="button" class="btn-remove" title="Remove">&times;</button>
+  </div>
+</template>
+
+<template id="labelRowTemplate">
+  <div class="row" data-row="label">
+    <input type="text" class="row-input" data-field="key" placeholder="key" style="flex:1" />
+    <span class="row-sep">=</span>
+    <input type="text" class="row-input" data-field="value" placeholder="value" style="flex:1.5" />
+    <button type="button" class="btn-remove" title="Remove">&times;</button>
+  </div>
+</template>
+
+<script src="js/app.js"></script>
+</body>
+</html>
